@@ -1,0 +1,170 @@
+Cache-Aware Micro-ETL Performance Project (Python)
+Mini Project Guide – Low-Latency Data Engineering from Hardware to Pipelines
+Version 1.0 • 2025-12-20
+1. Project Overview
+This mini project is designed to show your interest in low-latency data engineering and your understanding of how hardware (CPU caches and memory hierarchy) interacts with modern data pipelines. You will implement a small but realistic ETL-style benchmark in Python, then build multiple variants that change only one thing: how data is laid out and accessed in memory. You will connect these low-level patterns to modern data engineering technologies such as Apache Arrow, Parquet, DuckDB, and vectorized dataframes.
+Core goals
+Understand how L1/L2/L3 caches and main memory affect latency in data processing.
+Build a micro-ETL pipeline in Python that mimics real-world extract → transform → load patterns.
+Create multiple implementations with different memory access patterns and measure their performance.
+Use modern Python data engineering tools (NumPy, pandas, pyarrow, Polars, DuckDB) to see how they leverage columnar and vectorized execution.
+Produce a concise writeup with graphs and a clear “% improvement” story, framed like a small research report.
+Language, OS, and scope
+Language: Python (for portability and alignment with modern data engineering).
+OS: You can work on Windows and macOS. The project is designed to be cross-platform.
+Scope: Target ~1000 lines of Python code across all modules (not counting comments/docs).
+Style: Treat this like a small internal performance study at a data engineering team.
+2. Background: Hardware and Modern Data Engineering
+2.1 Memory hierarchy and caches (short conceptual summary)
+CPU cores are much faster than DRAM; without caches, the CPU spends most of its time stalled waiting on memory.
+Modern CPUs use a multi-level cache hierarchy (L1, L2, L3) with increasing size and latency as you move away from the core.
+L1 is tiny and extremely fast, L2 is bigger and slightly slower, L3 is shared and larger but slower still; RAM is much slower than all cache levels.
+Caches rely on locality: temporal (reusing the same data soon) and spatial (accessing nearby data in memory, typically 64-byte cache lines).
+In data pipelines, this means tightly packed, sequential scans and vectorized operations tend to be much faster than pointer-heavy, random access.
+2.2 How modern data tools exploit cache & memory hierarchy
+Modern data engineering systems are explicitly designed to be cache-friendly and to reduce memory latency: 
+Columnar formats like Parquet store data by column, allowing analytical engines to read only needed columns and scan them sequentially.
+In-memory columnar formats like Apache Arrow use contiguous column buffers and vectorized operations that naturally align with cache lines and SIMD instructions.
+Vectorized, in-process analytical engines like DuckDB operate on columnar data with tight loops over arrays, minimizing branch mispredictions and cache misses.
+Python libraries such as NumPy, pandas (with the pyarrow backend), Polars, and PyArrow itself provide high-level APIs over highly optimized, cache-aware C/C++ and Rust kernels.
+Distributed data engines (Spark, Flink, Dask) still rely on these same ideas at the core: columnar storage, batching, and locality-aware execution.
+2.3 How this project fits into real data engineering
+You’re not building a full Kafka/Flink/Spark system. Instead, you’re zooming in on the core performance unit: how records move through memory during ETL.
+The experiments you run are directly related to why Parquet/Arrow/Polars/DuckDB are so fast in real-world platforms.
+The lessons you learn about batch size, data layout, and vectorization translate to larger systems (e.g., how to design schemas, file layouts, and batch sizes in real pipelines).
+3. High-Level Design of the Micro-ETL Benchmark
+The project centers on a small, configurable Python CLI tool that simulates an ETL pipeline on a synthetic dataset and runs multiple implementation variants. Each variant implements the same logical operation but uses a different memory access pattern and/or technology stack.
+3.1 Data model
+Synthetic event records stored in a binary or columnar format on disk.
+Example fields: user_id (int), event_type (int), event_time_ms (int), value (float), merchant_id (int).
+Dataset size: configurable (e.g., 50MB, 200MB, 1GB) so you can see behavior as the working set grows beyond caches.
+3.2 Logical ETL task
+Extract: Read the dataset from disk into memory buffers.
+Transform: Filter by event_type, then compute aggregates such as sum(value) and count per user_id (and optionally per merchant_id).
+Load: Write aggregated results to an output file (e.g., CSV, Parquet, or DuckDB table).
+3.3 Implementation variants (same logic, different memory behavior)
+Variant A – Baseline pure Python: naive row-by-row iteration, Python dicts and objects, minimal use of vectorization.
+Variant B – Batched NumPy/pandas: read data in larger chunks, convert to NumPy arrays or pandas DataFrames, and use vectorized operations.
+Variant C – Columnar/Arrow/Polars: store data in Arrow tables or Polars DataFrames, operate on columnar arrays, and write Parquet or DuckDB.
+Variant D – Batch-size sweep: run the most optimized variant with different batch sizes (e.g., 16KB, 64KB, 256KB, 1MB, 4MB) to see how performance changes as working set size interacts with caches.
+3.4 Metrics you will track
+Throughput (rows processed per second).
+Stage-level timings (extract, transform, load).
+End-to-end latency for a batch.
+Optional: CPU usage, Python-level profiling hotspots, memory use for each variant.
+Optional (platform-specific): cache/memory-related metrics using profilers where available (VTune on Windows, Instruments on macOS).
+4. Project Structure (Python, ~1000 LOC Target)
+4.1 Suggested folder layout
+/src
+    main.py                    # CLI entrypoint
+    config.py                  # configuration (paths, sizes, batch sizes, etc.)
+    data_gen.py                # synthetic dataset generator
+    io_formats.py              # read/write binary/Parquet/DuckDB helpers
+    pipeline_baseline.py       # Variant A – naive implementation
+    pipeline_batched.py        # Variant B – NumPy/pandas batched implementation
+    pipeline_columnar.py       # Variant C – Arrow/Polars/DuckDB implementation
+    batch_sweep.py             # Variant D – sweep batch sizes and collect stats
+    profiling.py               # timers + simple profiling helpers
+
+
+/docs
+    design.md                  # short high-level design
+    experiments.md             # experimental plan and results
+    figures/                   # charts and screenshots from profilers
+4.2 LOC budgeting (rough)
+main.py:                ~80–120 lines
+config.py:              ~40–60 lines
+data_gen.py:            ~80–120 lines
+io_formats.py:          ~120–160 lines
+pipeline_baseline.py:   ~150–200 lines
+pipeline_batched.py:    ~150–200 lines
+pipeline_columnar.py:   ~150–200 lines
+batch_sweep.py:         ~80–140 lines
+profiling.py:           ~60–80 lines
+These are soft estimates. The main constraint is that you keep the project focused on the core ideas instead of turning it into a full data platform.
+5. Milestones and Step-by-Step Guide
+Milestone 0 – Environment, config, and CLI skeleton
+Goal: A cross-platform Python project that runs on Windows and macOS with a simple command-line interface.
+☐ Create the repo and /src, /docs folders.
+☐ Set up a virtual environment and requirements file (e.g., numpy, pandas, pyarrow, polars, duckdb, rich or click for CLI).
+☐ Implement config.py with constants for dataset size, batch sizes, and file paths.
+☐ Implement main.py with a CLI that accepts: variant name, dataset size, output directory, and number of runs.
+☐ Add a simple timing utility (profiling.py) using time.perf_counter() and context managers.
+Milestone 1 – Synthetic dataset generator
+Goal: Generate synthetic event data with controllable size and simple statistical properties.
+☐ Implement data_gen.py with a function that writes a binary or columnar file containing N records.
+☐ Include configurable number of users, merchants, and distribution of event types.
+☐ Optionally support multiple output formats: binary + Parquet (via pyarrow or pandas).
+☐ Add a CLI command: microetl generate --size 500MB (or similar).
+Milestone 2 – Variant A: Baseline pure Python pipeline
+Goal: A clear but intentionally cache-unfriendly reference implementation.
+☐ Implement a simple reader that iterates row-by-row from the input file, decoding into Python tuples or small objects.
+☐ Use a standard Python dict keyed by user_id to maintain aggregates (sum, count).
+☐ Write results to a CSV file line-by-line.
+☐ Measure and log: total rows processed, total time, and per-stage times.
+☐ Record results for at least two dataset sizes (e.g., 50MB and 200MB).
+Milestone 3 – Variant B: Batched NumPy/pandas pipeline
+Goal: Reduce Python overhead by processing records in batches using vectorized operations.
+☐ Implement a reader that loads large blocks of data into NumPy arrays or pandas DataFrames.
+☐ Perform filtering and aggregation using vectorized operations (e.g., boolean masks + groupby).
+☐ Write aggregated results with a batched writer (e.g., DataFrame.to_csv or to_parquet).
+☐ Expose batch size as a parameter so you can tune it.
+☐ Measure and log metrics as in Variant A, and compare throughput.
+Milestone 4 – Variant C: Columnar / Arrow / Polars / DuckDB pipeline
+Goal: Use modern columnar and vectorized tools that are more representative of real data engineering systems.
+☐ Use PyArrow or Polars to represent the dataset as a columnar table in memory.
+☐ Implement filters and aggregations using columnar operations (e.g., Polars expressions or DuckDB SQL over Parquet).
+☐ Write output in a modern format (e.g., Parquet or a DuckDB table).
+☐ Reuse batch size concepts where possible (e.g., reading in row groups or fragments).
+☐ Measure and compare performance to Variants A and B.
+Milestone 5 – Variant D: Batch-size sweep
+Goal: Show how throughput and latency change as batch size changes, illustrating cache and memory effects indirectly.
+☐ Pick your best-performing variant (likely columnar/vectorized).
+☐ Implement batch_sweep.py to run the same workload across a range of batch sizes.
+☐ Collect metrics: batch size, throughput, transform time, total time.
+☐ Write results to a CSV file for plotting (e.g., batch_size_vs_throughput.csv).
+☐ Plot two graphs: (1) throughput vs batch size, (2) end-to-end time vs batch size.
+Milestone 6 – Profiling and interpretation
+Goal: Use profiling tools to explain *why* the optimized variants win, tying back to CPU cache and memory hierarchy.
+☐ Use a Python profiler (e.g., cProfile, pyinstrument, scalene, or py-spy) on each variant to find hotspots.
+☐ On Windows, consider using Intel VTune or Windows Performance Analyzer for deeper CPU/cache analysis (optional but impressive).
+☐ On macOS, consider Instruments (Time Profiler) for CPU-bound snapshots.
+☐ Capture screenshots of key profiling views and store them in /docs/figures.
+☐ Write a short interpretation in docs/experiments.md explaining which functions benefit most from vectorization and batching.
+Milestone 7 – Final report and narrative
+Goal: Create a mini case study you can show to ML researchers or interviewers.
+☐ Summarize the problem, variants, and setup in 1–2 paragraphs.
+☐ Include a table comparing variants by throughput and latency for different dataset sizes.
+☐ Include plots for batch size sweeps and a brief explanation of the shape of the curves.
+☐ Explain how your findings relate to cache concepts (locality, cache lines, working set sizes).
+☐ Connect your findings to modern data engineering tools (Arrow, Parquet, DuckDB, Polars).
+☐ Write 2–3 resume-ready bullet points based on this project.
+6. Cross-Platform Notes (Windows and macOS)
+6.1 Python and libraries
+Use standard cross-platform libraries (NumPy, pandas, pyarrow, Polars, DuckDB). These all support Windows and macOS.
+Avoid OS-specific file APIs; use pathlib and standard I/O.
+Keep configuration in environment variables or config files, not OS-specific paths.
+6.2 Profiling differences
+Baseline timing (time.perf_counter) works on both Windows and macOS.
+Python profilers like cProfile, pyinstrument, scalene, and py-spy are cross-platform.
+Low-level cache counters are easier on Linux, but on Windows/macOS you can still infer cache and memory behavior from performance curves and profiler hotspots.
+If you want deeper hardware insight, treat VTune (Windows/Intel) or Instruments (macOS) as optional bonus tools.
+7. Learning Resources and Suggested Reading
+7.1 Hardware and cache fundamentals
+Any modern Computer Organization or Architecture textbook (Hennessy & Patterson, for example).
+Short articles or videos on CPU caches, memory hierarchy, and locality of reference.
+Blog-style explanations of L1/L2/L3 caches and their latencies.
+7.2 Python performance and vectorization
+Official NumPy documentation on vectorization and broadcasting.
+PyArrow docs and tutorials explaining columnar memory and zero-copy data sharing.
+Polars and DuckDB docs on vectorized execution and columnar query engines.
+Articles on pandas with Arrow backend and why columnar memory improves performance.
+7.3 Modern data engineering stack
+High-level guides to Parquet, Delta Lake, Apache Iceberg, and Apache Hudi for lakehouse storage.
+Introductory material on Apache Kafka and Apache Beam/Flink for streaming pipelines.
+Blog posts or conference talks on how modern warehouses and lakehouses achieve sub-second queries.
+8. How to talk about this project to others
+“I built a cache-aware micro-ETL benchmark in Python to study how memory layout and batching affect latency and throughput in data pipelines.”
+“I compared naive row-wise Python, batched NumPy/pandas, and columnar Arrow/Polars/DuckDB variants on the same workload, then profiled the differences.”
+“I used the results to connect CPU cache behavior (locality, working set size, cache lines) to the design of modern data engineering systems (Parquet/Arrow, vectorized execution, lakehouse engines).”
+“The project helped me understand how to reason about latency starting from hardware and ending at end-to-end pipeline performance.”
