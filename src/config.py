@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     DATA_DIR: Path = BASE_DIR / "data"
     OUTPUT_DIR: Path = BASE_DIR / "output"
     DEFAULT_ROWS: int = 1_000_000
+    SEED: int = 42
     
     def model_post_init(self, __context):
         self.DATA_DIR.mkdir(parents=True, exist_ok=True)

@@ -5,7 +5,7 @@ from src.config import settings
 # Initialize the Typer app and Rich console
 app = typer.Typer(
     name="micro-etl",
-    help="🔥 Cache-Aware Micro-ETL Benchmark: Hardware-to-Algorithm Mapping",
+    help="Cache-Aware Micro-ETL Benchmark: Hardware-to-Algorithm Mapping",
     add_completion=False,
 )
 console = Console()
@@ -13,7 +13,7 @@ console = Console()
 @app.command()
 def info():
     """
-    📌 Display project configuration and environment info.
+    Display project configuration and environment info.
     """
     console.print("\n[bold cyan]🚀 Cache-Aware Micro-ETL Config[/bold cyan]")
     console.print("-" * 40)
@@ -33,7 +33,7 @@ def generate():
 @app.command()
 def run():
     """
-    🏃 (Placeholder) Run a specific ETL pipeline variant.
+    ▶︎ (Placeholder) Run a specific ETL pipeline variant.
     """
     console.print("[yellow]Coming soon in Milestone 2: Pipeline Variants A-G[/yellow]")
 
