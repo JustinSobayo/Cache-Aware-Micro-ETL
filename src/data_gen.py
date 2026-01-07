@@ -31,6 +31,10 @@ class DataGenerator:
             "values": values,
             "metadata": metadata,
         }
+    def save_as_binary(self, data: dict, filename: str):
+        """Save a batch of synthetic data as a binary file."""
+        
+
 
 
 

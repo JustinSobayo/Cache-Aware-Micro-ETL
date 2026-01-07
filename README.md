@@ -1,4 +1,4 @@
-# Cache-Aware Micro-ETL Benchmark 🚀
+# Cache-Aware Micro-ETL Benchmark
 
 A high-performance "Systems-Level" Data Engineering project designed to bridge the gap between low-level hardware constraints (CPU Cache) and high-level Python data pipelines.
 

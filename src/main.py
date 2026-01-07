@@ -15,7 +15,7 @@ def info():
     """
     Display project configuration and environment info.
     """
-    console.print("\n[bold cyan]🚀 Cache-Aware Micro-ETL Config[/bold cyan]")
+    console.print("\n[bold cyan]Cache-Aware Micro-ETL Config[/bold cyan]")
     console.print("-" * 40)
     console.print(f"[bold white]Base Directory:[/bold white]   {settings.BASE_DIR}")
     console.print(f"[bold white]Data Directory:[/bold white]   {settings.DATA_DIR}")
@@ -26,14 +26,14 @@ def info():
 @app.command()
 def generate():
     """
-    🧪 (Placeholder) Generate synthetic datasets for benchmarking.
+    Generate synthetic datasets for benchmarking.
     """
     console.print("[yellow]Coming soon in Milestone 1: Synthetic Dataset Generator[/yellow]")
 
 @app.command()
 def run():
     """
-    ▶︎ (Placeholder) Run a specific ETL pipeline variant.
+    (Placeholder) Run a specific ETL pipeline variant.
     """
     console.print("[yellow]Coming soon in Milestone 2: Pipeline Variants A-G[/yellow]")
 
