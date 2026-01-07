@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.build/
+dist/
+.venv/
+venv/
+.env
+
+# Editors/OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Project data/artifacts
+data/*.parquet
+data/*.csv
+data/*.jsonl
+data/*.bin
+data/sweep_*
+output/*.csv
+output/*.prof
+docs/study_guide.md
+
+# Logs/temp
+*.log
+tmp/
