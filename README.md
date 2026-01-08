@@ -2,7 +2,9 @@
 
 A high-performance "Systems-Level" Data Engineering project designed to bridge the gap between low-level hardware constraints (CPU Cache) and high-level Python data pipelines.
 
----
+
+---<img width="744" height="425" alt="Screenshot 2026-01-08 013625" src="https://github.com/user-attachments/assets/8437df2c-f737-4082-b961-047811022991" />
+
 
 ## 🎯 The Goal
 The primary objective of this project is to demonstrate and measure how **Memory Hierarchy** (L1/L2/L3 Cache) and **Memory Layout** (Row-based vs. Columnar) impact the performance of data processing pipelines. 
