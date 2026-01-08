@@ -30,11 +30,13 @@ Modern CPUs are incredibly fast, but RAM is relatively slow. This creates the **
 
 ##  Project Architecture
 The system compares several processing variants to prove performance shifts:
-1.  **Row-Based**: Pure Python overhead.
-2.  **Batched**: NumPy/Pandas vectorization.
-3.  **Columnar**: Modern Arrow-based performance (Polars/DuckDB).
-4.  **Semi-Structured**: Why JSON is the biggest performance killer in data.
-5.  **Out-of-Core**: Processing data larger than available RAM.
+1.  **Variant A — Row-Based Pure Python**: Baseline pointer chasing overhead.
+2.  **Variant B — NumPy Batched**: Contiguous arrays to cut Python dispatch costs.
+3.  **Variant C — Pandas Batched**: DataFrame vectorization on columnar-friendly parquet.
+4.  **Variant D — Polars Columnar**: Arrow-native, cache-friendly columnar execution.
+5.  **Variant E — DuckDB SQL**: Vectorized SQL engine over Parquet/Arrow buffers.
+6.  **Variant F — Semi-Structured JSONL**: Nested, variable-width payloads to expose cache misses.
+7.  **Variant G — Out-of-Core Streaming**: Chunked I/O to handle data that exceeds RAM.
 
 ---
 
