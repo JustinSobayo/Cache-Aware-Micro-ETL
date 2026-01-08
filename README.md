@@ -6,17 +6,14 @@ A high-performance "Systems-Level" Data Engineering project designed to bridge t
 ---<img width="744" height="425" alt="Screenshot 2026-01-08 013625" src="https://github.com/user-attachments/assets/8437df2c-f737-4082-b961-047811022991" />
 
 
-## 🎯 The Goal
+## The Goal
 The primary objective of this project is to demonstrate and measure how **Memory Hierarchy** (L1/L2/L3 Cache) and **Memory Layout** (Row-based vs. Columnar) impact the performance of data processing pipelines. 
 
 While most data engineers focus on *orchestration* (Airflow, dBT), this project focuses on the **Compute Layer**—understanding the "physics" of data processing to build the fastest, most cost-effective systems possible.
 
-### 🧠 The Future: AI-Driven Pipeline Selection
-Ultimately, this benchmark will serve as the "Ground Truth" dataset to train a **Machine Learning model**. This model will intelligently predict the most efficient processing variant (Pandas, Polars, DuckDB, or Parallel) based on data distribution, hardware specs, and file size.
-
 ---
 
-## ⚡ Technical Impact & Problem Solved
+## Technical Impact & Problem Solved
 Modern CPUs are incredibly fast, but RAM is relatively slow. This creates the **"Memory Wall."**
 
 *   **Variant A (Baseline)**: Demonstrates the "Pointer Chasing" problem where Python objects are scattered in memory, causing the CPU to stall while waiting for data.
@@ -31,7 +28,7 @@ Modern CPUs are incredibly fast, but RAM is relatively slow. This creates the **
 
 ---
 
-## 🏗️ Project Architecture
+##  Project Architecture
 The system compares several processing variants to prove performance shifts:
 1.  **Row-Based**: Pure Python overhead.
 2.  **Batched**: NumPy/Pandas vectorization.
@@ -41,7 +38,7 @@ The system compares several processing variants to prove performance shifts:
 
 ---
 
-## 📖 Evidence & Further Reading
+## Evidence & Further Reading
 This project is built upon decades of research in database internals and high-performance computing.
 
 *   **[S2024 #06 - Vectorized Query Execution (CMU)](https://www.youtube.com/watch?v=yU1S8gwjGEw)**: Why the CPU cache is the most important part of a database.
@@ -51,4 +48,4 @@ This project is built upon decades of research in database internals and high-pe
 
 ---
 
-*Built with ❤️ for High-Performance Data Engineering.*
+*Built with love for High-Performance Data Engineering.*
